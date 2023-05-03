@@ -1,0 +1,236 @@
+#include <iostream>
+
+template<class T>
+class Cola;
+
+template<class T>
+class node{
+private:
+    T data;
+    node<T>* sig;
+public:
+    node():sig(nullptr){};
+    friend class Cola<T>;
+};
+
+template<class T>
+class Cola{
+private:
+    node<T>* lista;
+    node<T>* ultimo()const;
+    node<T>* primero()const;
+    node<T>* anterior(node<T>* pos)const;
+    void insertar(node<T>* pos, T elem);
+    bool eliminar(node<T>* pos);
+public:
+    Cola():lista(nullptr){};
+    bool vacia()const;
+    void imprimir()const;
+    void Enqueue(T elem);
+    void Dequeue();
+    T Front();
+};
+
+class constancia
+{
+private:
+    std::string nombre, carrera;
+    int aprobadas, promedio;
+public:
+
+    void getnom(std::string nombre)
+    {
+        this->nombre=nombre;
+    }
+
+    std::string setnom()
+    {
+        return nombre;
+    }
+
+    void getcar(std::string carrera)
+    {
+        this->carrera=carrera;
+    }
+
+    std::string setcar()
+    {
+        return carrera;
+    }
+
+    void getaprob(int aprobadas)
+    {
+        this->aprobadas=aprobadas;
+    }
+
+    int setaprob()
+    {
+        return aprobadas;
+    }
+
+    void getprom(int promedio)
+    {
+        this->promedio=promedio;
+    }
+
+    int setprom()
+    {
+        return promedio;
+    }
+
+    friend std::ostream & operator<<(std::ostream &O, constancia &x)
+    {
+          O<<"Nombre: "<<x.nombre<<std::endl;
+          O<<"Carrera: "<<x.carrera<<std::endl;
+          O<<"Aprobadas: "<<x.aprobadas<<std::endl;
+          O<<"Promedio: "<<x.promedio<<std::endl;
+          return O;
+    }
+
+    friend std::istream& operator>>(std::istream& Os, constancia& x) {
+    std::cout << "Nombre: ";
+    Os >> x.nombre;
+    std::cin.ignore();
+    std::cout << "Carrera: ";
+    Os >> x.carrera;
+    std::cin.ignore();
+    std::cout << "Aprobadas: ";
+    Os >> x.aprobadas;
+    std::cin.ignore();
+    std::cout << "Promedio: ";
+    Os >> x.promedio;
+    std::cin.ignore();
+    return Os;
+    }
+
+};
+
+template<class T>
+T Cola<T>::Front(){
+    if(!vacia()){
+       return primero()->data;
+    }
+}
+
+template<class T>
+void Cola<T>::Dequeue(){
+    eliminar(primero());
+}
+
+template<class T>
+void Cola<T>::Enqueue(T elem){
+    insertar(ultimo(),elem);
+}
+
+template<class T>
+void Cola<T>::imprimir()const{
+    node<T>* aux=lista;
+    while(aux!=nullptr){
+        std::cout<<aux->data<<"-> ";
+        aux=aux->sig;
+    }
+}
+
+template<class T>
+bool Cola<T>::eliminar(node<T>* pos){
+    if(vacia() || pos==nullptr){
+        return false;
+    }
+    if(pos==lista){
+        lista=lista->sig;
+    }
+    else{
+        anterior(pos)->sig=pos->sig;
+    }
+    delete pos;
+    return true;
+}
+
+template<class T>
+void Cola<T>::insertar(node<T>* pos, T elem){
+    node<T>* aux= new node<T>;
+    aux->data=elem;
+    if(pos==nullptr){
+        aux->sig=lista;
+        lista=aux;
+    }
+    else{
+        aux->sig=pos->sig;
+        pos->sig=aux;
+    }
+}
+
+template<class T>
+node<T>* Cola<T>::anterior(node<T>* pos)const{
+    if(vacia() || pos==nullptr){
+        return nullptr;
+    }
+    node<T>* aux=lista;
+    while(aux!=nullptr && aux->sig!=pos){
+        aux=aux->sig;
+    }
+    return aux;
+}
+
+template<class T>
+node<T>* Cola<T>::primero()const{
+    if(vacia()){
+        return nullptr;
+    }
+    return lista;
+}
+
+
+template<class T>
+node<T>* Cola<T>::ultimo()const{
+    if(vacia()){
+        return nullptr;
+    }
+    node<T>* aux=lista;
+    while(aux->sig!=nullptr){
+        aux=aux->sig;
+    }
+    return aux;
+}
+
+template<class T>
+bool Cola<T>::vacia()const{
+    if(lista==nullptr)
+        return true;
+    return false;
+}
+
+int main()
+{
+    int aux;
+    Cola<constancia> miC;
+    constancia datos;
+
+    do
+    {
+        std::cout<<"\n1.Dar de alta una constancia\n2.Elaborar constancia\n3.Salir\nSelecciona una opcion:"<<std::endl;
+        std::cin>>aux;
+        switch(aux)
+        {
+        case 1:
+            std::cin>>datos;
+            miC.Enqueue(datos);
+            break;
+        case 2:
+            if(miC.vacia())
+            {
+                std::cout<<"No hay constancias"<<std::endl;
+            }
+            else
+            {
+                datos=miC.Front();
+                std::cout<<datos<<std::endl;
+                miC.Dequeue();
+            }
+            break;
+        default:
+            std::cout<<"Esta opcion no es valida"<<std::endl;
+        }
+    }while(aux!=3);
+    return 0;
+}
